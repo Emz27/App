@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {View, TouchableOpacity} from 'react-native';
+import {TouchableOpacity as TouchableOpacityGesture} from 'react-native-gesture-handler';
 import styles from '../styles/styles';
 import Checkbox from './Checkbox';
 import Text from './Text';
@@ -80,9 +81,17 @@ class CheckboxWithLabel extends React.Component {
         this.toggleCheckbox = this.toggleCheckbox.bind(this);
     }
 
+    shouldComponentUpdate(nextProps) {
+        if (nextProps.isChecked !== this.props.isChecked) {
+            this.isChecked = nextProps.isChecked;
+        } else if (nextProps.value !== this.props.value) {
+            this.isChecked = nextProps.value;
+        }
+        return true;
+    }
+
     toggleCheckbox() {
         this.props.onInputChange(!this.isChecked);
-        this.isChecked = !this.isChecked;
     }
 
     render() {
@@ -96,7 +105,8 @@ class CheckboxWithLabel extends React.Component {
                         hasError={Boolean(this.props.errorText)}
                         forwardedRef={this.props.forwardedRef}
                     />
-                    <TouchableOpacity
+                    {/* gesture touchable to fix long press inconsistency */}
+                    <TouchableOpacityGesture
                         focusable={false}
                         onPress={this.toggleCheckbox}
                         style={[
@@ -110,13 +120,16 @@ class CheckboxWithLabel extends React.Component {
                             styles.noSelect,
                         ]}
                     >
-                        {this.props.label && (
-                            <Text style={[styles.ml1]}>
-                                {this.props.label}
-                            </Text>
-                        )}
-                        {this.LabelComponent && (<this.LabelComponent />)}
-                    </TouchableOpacity>
+                        {/* react touchable as child to allow touch hovering on desktop */}
+                        <TouchableOpacity pointerEvents="none" activeOpacity={1}>
+                            {this.props.label && (
+                                <Text style={[styles.ml1]}>
+                                    {this.props.label}
+                                </Text>
+                            )}
+                            {this.LabelComponent && (<this.LabelComponent />)}
+                        </TouchableOpacity>
+                    </TouchableOpacityGesture>
                 </View>
                 <FormHelpMessage message={this.props.errorText} />
             </View>

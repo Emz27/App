@@ -1,4 +1,5 @@
 import React from 'react';
+import {TouchableOpacity as TouchableOpacityGesture} from 'react-native-gesture-handler';
 import {TouchableOpacity} from 'react-native';
 import PropTypes from 'prop-types';
 import Text from './Text';
@@ -14,9 +15,13 @@ const propTypes = {
 
 function CurrencySymbolButton(props) {
     return (
-        <TouchableOpacity onPress={props.onCurrencyButtonPress}>
-            <Text style={styles.iouAmountText}>{props.currencySymbol}</Text>
-        </TouchableOpacity>
+        <TouchableOpacityGesture onPress={props.onCurrencyButtonPress}>
+            {/* gesture touchable to fix long press inconsistency */}
+            <TouchableOpacity pointerEvents="none" activeOpacity={1}>
+                {/* react touchable as child to allow touch hovering on desktop */}
+                <Text style={styles.iouAmountText}>{props.currencySymbol}</Text>
+            </TouchableOpacity>
+        </TouchableOpacityGesture>
     );
 }
 
